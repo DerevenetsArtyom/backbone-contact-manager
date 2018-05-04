@@ -2,12 +2,21 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-9        <title>Backbone.js Web App</title>
+        <title>Backbone.js Web App</title>
         <link rel="stylesheet" href="css/screen.css" />
     </head>
     <body>
         <div id="contacts"></div>
 
+        <script id="contactTemplate" type="text/template">
+            <img src="<%= photo %>" alt="<%= name %>" />
+            <h1><%= name %><span><%= type %></span></h1>
+            <div><%= address %></div>
+            <dl>
+                <dt>Tel:</dt><dd><%= tel %></dd>
+                <dt>Email:</dt><dd><a href="mailto:<%= email %>"><%= email %></a></dd>
+            </dl>
+        </script>
         <script src="js/vendors/jquery-1.7.1.min.js"></script>
         <script src="js/vendors/json2.js"></script>
         <script src="js/vendors/underscore-min.js"></script>
