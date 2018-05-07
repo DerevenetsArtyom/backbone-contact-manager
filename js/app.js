@@ -37,10 +37,24 @@
     var DirectoryView = Backbone.View.extend({
         el: $("#contacts"),
 
+        events: {
+          "change #filter select": "setFilter"
+        },
+
         initialize: function () {
             this.collection = new Directory(contacts);
             this.render();
             this.$el.find("#filter").append(this.createSelect());
+
+            // filterByType() as the handler function for specific event
+            this.on("change:filterType", this.filterByType, this);
+
+            // re-render when collection changed
+
+            // If we don't supply this as the 3-th argument,
+            // there won't be able to access the collection inside the render()
+            // method when it handles the reset event
+            this.collection.on("reset", this.render, this);
         },
 
         render: function () {
@@ -51,36 +65,31 @@
         },
 
         renderContact: function (item) {
-            var contactView = new ContactView({
-                model: item
-            });
+            var contactView = new ContactView({ model: item });
             this.$el.append(contactView.render().el);
-        },
-        
-        // return array of unique types
-        getTypes: function () {
-            return _.uniq(this.collection.pluck("type"), false, function (type) {
-                return type.toLowerCase()
-            })
         },
         
         // construct 'select' element with types as options
         createSelect: function () {
+            var self = this;
             var select = $("<select/>", {
-                html: "<option>All</option>"
+                html: "<option>all</option>"
             });
 
-            _.each(this.getTypes(), function (item) {
+            // return array of unique types
+            getTypes = function () {
+                return _.uniq(self.collection.pluck("type"), false, function (type) {
+                    return type.toLowerCase()
+                })
+            };
+
+            _.each(getTypes(), function (item) {
                 var option = $("<option/>", {
                     value: item.toLowerCase(),
                     text: item.toLowerCase()
                 }).appendTo(select);
             });
             return select;
-        },
-
-        events: {
-          "change #filter select": "setFilter"
         },
 
         // catching filter and trigger custom event
@@ -94,14 +103,14 @@
             if (this.filterType === "all") {
                 this.collection.reset(contacts);
             } else {
+                // won't be rerendered according to 'reset' event
                 this.collection.reset(contacts, {silent: true});
 
-                // save to be able to use it inside callback
+                // save filterType to be able to use it inside the callback
                 var filterType = this.filterType;
                 var filtered = _.filter(this.collection.models, function(item){
                     return item.get("type").toLowerCase() === filterType
                 });
-
                 this.collection.reset(filtered)
             }
         }
