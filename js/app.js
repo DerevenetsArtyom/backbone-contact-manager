@@ -58,6 +58,8 @@
         },
 
         render: function () {
+            // remove previous content from section
+            this.$el.find("article").remove();
             var self = this;
             _.each(this.collection.models, function (item) {
                 self.renderContact(item);
@@ -73,7 +75,7 @@
         createSelect: function () {
             var self = this;
             var select = $("<select/>", {
-                html: "<option>all</option>"
+                html: "<option value='all'>all</option>"
             });
 
             // return array of unique types
@@ -102,6 +104,8 @@
         filterByType: function () {
             if (this.filterType === "all") {
                 this.collection.reset(contacts);
+                contactsRouter.navigate("filter/all");
+
             } else {
                 // won't be rerendered according to 'reset' event
                 this.collection.reset(contacts, {silent: true});
@@ -111,12 +115,30 @@
                 var filtered = _.filter(this.collection.models, function(item){
                     return item.get("type").toLowerCase() === filterType
                 });
-                this.collection.reset(filtered)
+                this.collection.reset(filtered);
+                contactsRouter.navigate("filter/" + filterType);
             }
         }
 
     });
 
-    new DirectoryView();
+    //add routing
+    var ContactsRouter = Backbone.Router.extend({
+        routes: {
+            "filter/:type": "urlFilter"
+        },
+
+        urlFilter: function (type) {
+            directory.filterType = type;
+            directory.trigger("change:filterType");
+        }
+    });
+
+    var directory = new DirectoryView();
+
+    var contactsRouter = new ContactsRouter();
+
+    //start history service
+    Backbone.history.start();
 
 } (jQuery));
