@@ -40,6 +40,7 @@
         initialize: function () {
             this.collection = new Directory(contacts);
             this.render();
+            this.$el.find("#filter").append(this.createSelect());
         },
 
         render: function () {
@@ -54,6 +55,28 @@
                 model: item
             });
             this.$el.append(contactView.render().el);
+        },
+        
+        // return array of unique types
+        getTypes: function () {
+            return _.uniq(this.collection.pluck("type"), false, function (type) {
+                return type.toLowerCase()
+            })
+        },
+        
+        // construct 'select' element with types as options
+        createSelect: function () {
+            var select = $("<select/>", {
+                html: "<option>All</option>"
+            });
+
+            _.each(this.getTypes(), function (item) {
+                var option = $("<option/>", {
+                    value: item.toLowerCase(),
+                    text: item.toLowerCase()
+                }).appendTo(select);
+            });
+            return select;
         }
     });
 
