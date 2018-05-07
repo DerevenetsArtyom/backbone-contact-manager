@@ -77,7 +77,35 @@
                 }).appendTo(select);
             });
             return select;
+        },
+
+        events: {
+          "change #filter select": "setFilter"
+        },
+
+        // catching filter and trigger custom event
+        setFilter: function (e) {
+            this.filterType = e.currentTarget.value;
+            this.trigger("change:filterType");
+        },
+
+        // actual filtering of collection on type
+        filterByType: function () {
+            if (this.filterType === "all") {
+                this.collection.reset(contacts);
+            } else {
+                this.collection.reset(contacts, {silent: true});
+
+                // save to be able to use it inside callback
+                var filterType = this.filterType;
+                var filtered = _.filter(this.collection.models, function(item){
+                    return item.get("type").toLowerCase() === filterType
+                });
+
+                this.collection.reset(filtered)
+            }
         }
+
     });
 
     new DirectoryView();
