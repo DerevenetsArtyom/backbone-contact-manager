@@ -38,7 +38,8 @@
         el: $("#contacts"),
 
         events: {
-          "change #filter select": "setFilter"
+            "change #filter select": "setFilter",
+            "click #add": "addContact"
         },
 
         initialize: function () {
@@ -118,6 +119,34 @@
                 this.collection.reset(filtered);
                 contactsRouter.navigate("filter/" + filterType);
             }
+        },
+
+        // handling form input and creating new contact out of form data
+        addContact: function (e) {
+            // default behaviour of the <button>:
+            // submit the form and reload the page – not what we want
+            e.preventDefault();
+
+            this.collection.reset(contacts, {silent: true});
+
+            var newModel = {};
+            $("#addContact").children("input").each(function (i, el) {
+                if ($(el).val() !== "") {
+                   newModel[el.id] = $(el).val();
+                }
+            });
+            contacts.push(newModel);
+
+            this.collection.add(new Contact(newModel));
+
+            // handle the case when type is new and add it to the select
+            if (_.indexOf(this.getTypes(), newModel.type) === -1) {
+                this.$el.find("#filter").find("select").remove().end().append(this.createSelect());
+            }
+
+            // added by myself
+            this.filterType = newModel.type.toLowerCase();
+            this.filterByType();
         }
 
     });
