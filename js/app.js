@@ -32,6 +32,23 @@
         className: "contact-container",
         template: $("#contactTemplate").html(),
 
+        events: {
+            "click button.delete": "deleteContact"
+        },
+
+        deleteContact: function (e) {
+            e.preventDefault();
+
+            var removedType = this.model.get("type").toLowerCase();
+
+            this.model.destroy();
+            this.remove();
+
+            if (_.indexOf(directory.getTypes(), removedType) === -1) {
+                directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
+            }
+        },
+        
         render: function () {
             var tmpl = _.template(this.template);
             this.$el.html(tmpl(this.model.toJSON()));
