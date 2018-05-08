@@ -14,7 +14,12 @@
     //define product model
     var Contact = Backbone.Model.extend({
         defaults: {
-            photo: "img/placeholder.png"
+            photo: "img/placeholder.png",
+            name: "Default name",
+            address: "Default address",
+            tel: "11111111",
+            email: "Default email",
+            type: "family"
         }
     });
 
@@ -56,6 +61,8 @@
             // there won't be able to access the collection inside the render()
             // method when it handles the reset event
             this.collection.on("reset", this.render, this);
+
+            this.collection.on("add", this.renderContact, this);
         },
 
         render: function () {
