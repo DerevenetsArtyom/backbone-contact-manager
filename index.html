@@ -8,10 +8,22 @@
     <body>
         <div id="contacts">
             <header>
-                <div id="filter"><label>Show me:</label></div>
+                <div id="filter">
+                    <label>Show me:</label>
+                </div>
+                <a id="showForm" href="#">Add new contact</a>
+                <form id="addContact" action="#">
+                    <label for="photo">Photo:</label><input id="photo" type="file" />
+                    <label for="name">Name:</label><input id="name" />
+                    <label for="type">Type:</label><input id="type" />
+                    <label for="address">Address:</label><input id="address" />
+                    <label for="tel">Tel:</label><input id="tel" />
+                    <label for="email">Email:</label><input id="email" />
+
+                    <button id="add">Add</button>
+                </form>
             </header>
         </div>
-
         <script id="contactTemplate" type="text/template">
             <img src="<%= photo %>" alt="<%= name %>" />
             <h1><%= name %><span><%= type %></span></h1>
