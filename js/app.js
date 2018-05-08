@@ -65,7 +65,8 @@
 
         events: {
             "change #filter select": "setFilter",
-            "click #add": "addContact"
+            "click #add": "addContact",
+            "click #showForm": "showForm"
         },
 
         initialize: function () {
@@ -187,6 +188,10 @@
                     contacts.splice(_.indexOf(contacts, contact), 1);
                 }
             });
+        },
+        
+        showForm: function () {
+            this.$el.find("#addContact").slideToggle();
         }
     });
 
