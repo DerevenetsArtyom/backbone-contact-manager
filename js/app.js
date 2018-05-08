@@ -79,26 +79,27 @@
             this.$el.append(contactView.render().el);
         },
         
+        // return array of unique types
+        getTypes: function () {
+            return _.uniq(this.collection.pluck("type"), false, function (type) {
+                console.log("getTypes type", type);
+                return type.toLowerCase()
+            })
+        },
+
         // construct 'select' element with types as options
         createSelect: function () {
-            var self = this;
             var select = $("<select/>", {
                 html: "<option value='all'>all</option>"
             });
 
-            // return array of unique types
-            getTypes = function () {
-                return _.uniq(self.collection.pluck("type"), false, function (type) {
-                    return type.toLowerCase()
-                })
-            };
-
-            _.each(getTypes(), function (item) {
+            _.each(this.getTypes(), function (item) {
                 var option = $("<option/>", {
                     value: item.toLowerCase(),
                     text: item.toLowerCase()
                 }).appendTo(select);
             });
+            console.log("createSelect select", select);
             return select;
         },
 
@@ -139,21 +140,19 @@
             var newModel = {};
             $("#addContact").children("input").each(function (i, el) {
                 if ($(el).val() !== "") {
-                   newModel[el.id] = $(el).val();
+                    newModel[el.id] = $(el).val();
                 }
             });
-            contacts.push(newModel);
 
-            this.collection.add(new Contact(newModel));
+            contacts.push(newModel);
 
             // handle the case when type is new and add it to the select
             if (_.indexOf(this.getTypes(), newModel.type) === -1) {
+                this.collection.add(new Contact(newModel));
                 this.$el.find("#filter").find("select").remove().end().append(this.createSelect());
+            } else {
+                this.collection.add(new Contact(newModel));
             }
-
-            // added by myself
-            this.filterType = newModel.type.toLowerCase();
-            this.filterByType();
         }
 
     });
