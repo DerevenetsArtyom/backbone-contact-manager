@@ -41,9 +41,13 @@
 
             var removedType = this.model.get("type").toLowerCase();
 
+            //remove model
             this.model.destroy();
+
+            //remove view from page
             this.remove();
 
+            //re-render select if no more of deleted type
             if (_.indexOf(directory.getTypes(), removedType) === -1) {
                 directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
             }
@@ -80,6 +84,7 @@
             this.collection.on("reset", this.render, this);
 
             this.collection.on("add", this.renderContact, this);
+            this.collection.on("remove", this.removeContact, this);
         },
 
         render: function () {
@@ -99,7 +104,6 @@
         // return array of unique types
         getTypes: function () {
             return _.uniq(this.collection.pluck("type"), false, function (type) {
-                console.log("getTypes type", type);
                 return type.toLowerCase()
             })
         },
@@ -116,7 +120,6 @@
                     text: item.toLowerCase()
                 }).appendTo(select);
             });
-            console.log("createSelect select", select);
             return select;
         },
 
@@ -170,8 +173,21 @@
             } else {
                 this.collection.add(new Contact(newModel));
             }
-        }
+        },
+        
+        removeContact: function (removedModel) {
+            var removed = removedModel.attributes;
 
+            if (removed.photo === "img/placeholder.png") {
+                delete removed.photo;
+            }
+
+            _.each(contacts, function (contact) {
+                if (_.isEqual(contact, removed)) {
+                    contacts.splice(_.indexOf(contacts, contact), 1);
+                }
+            });
+        }
     });
 
     //add routing
