@@ -31,6 +31,7 @@
         tagName: "article",
         className: "contact-container",
         template: _.template($("#contactTemplate").html()),
+        editTemplate: _.template($("#contactEditTemplate").html()),
 
         events: {
             "click button.delete": "deleteContact",
@@ -60,7 +61,26 @@
             if (_.indexOf(directory.getTypes(), removedType) === -1) {
                 directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
             }
+        },
+
+        //switch contact to edit mode
+        editContact: function () {
+            // rendering view with template for that case
+            this.$el.html(this.editTemplate(this.model.toJSON()));
+
+            const newOpt = $("<option/>", {
+                html: "<em>Add new ...</em>",
+                value: "addType"
+            });
+
+             this.select = directory.createSelect().addClass("type")
+                .val(this.$el.find("#type").val()).append(newOpt)
+                .insertAfter(this.$el.find(".name"));
+
+            this.$el.find("input[type='hidden']").remove();
         }
+
+
     });
 
     const DirectoryView = Backbone.View.extend({
