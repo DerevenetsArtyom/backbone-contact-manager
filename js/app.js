@@ -1,6 +1,6 @@
 ﻿(function ($) {
 
-    var contacts = [
+    const contacts = [
         { name: "Contact 1", address: "1, a street, a town, a city, AB12 3CD", tel: "0123456789", email: "anemail@me.com", type: "family" },
         { name: "Contact 2", address: "1, a street, a town, a city, AB12 3CD", tel: "0123456789", email: "anemail@me.com", type: "family" },
         { name: "Contact 3", address: "1, a street, a town, a city, AB12 3CD", tel: "0123456789", email: "anemail@me.com", type: "friend" },
@@ -12,7 +12,7 @@
     ];
 
     //define product model
-    var Contact = Backbone.Model.extend({
+    const Contact = Backbone.Model.extend({
         defaults: {
             photo: "img/placeholder.png",
             name: "Default name",
@@ -23,23 +23,28 @@
         }
     });
 
-    var Directory = Backbone.Collection.extend({
+    const Directory = Backbone.Collection.extend({
         model: Contact
     });
 
-    var ContactView = Backbone.View.extend({
+    const ContactView = Backbone.View.extend({
         tagName: "article",
         className: "contact-container",
-        template: $("#contactTemplate").html(),
+        template: _.template($("#contactTemplate").html()),
 
         events: {
             "click button.delete": "deleteContact"
         },
 
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        },
+
         deleteContact: function (e) {
             e.preventDefault();
 
-            var removedType = this.model.get("type").toLowerCase();
+            const removedType = this.model.get("type").toLowerCase();
 
             //remove model
             this.model.destroy();
@@ -51,16 +56,10 @@
             if (_.indexOf(directory.getTypes(), removedType) === -1) {
                 directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
             }
-        },
-        
-        render: function () {
-            var tmpl = _.template(this.template);
-            this.$el.html(tmpl(this.model.toJSON()));
-            return this
         }
     });
 
-    var DirectoryView = Backbone.View.extend({
+    const DirectoryView = Backbone.View.extend({
         el: $("#contacts"),
 
         events: {
@@ -78,10 +77,6 @@
             this.on("change:filterType", this.filterByType, this);
 
             // re-render when collection changed
-
-            // If we don't supply this as the 3-th argument,
-            // there won't be able to access the collection inside the render()
-            // method when it handles the reset event
             this.collection.on("reset", this.render, this);
 
             this.collection.on("add", this.renderContact, this);
@@ -91,14 +86,15 @@
         render: function () {
             // remove previous content from section
             this.$el.find("article").remove();
-            var self = this;
+
+            const self = this;
             _.each(this.collection.models, function (item) {
                 self.renderContact(item);
             }, this);
         },
 
         renderContact: function (item) {
-            var contactView = new ContactView({ model: item });
+            const contactView = new ContactView({ model: item });
             this.$el.append(contactView.render().el);
         },
         
@@ -111,12 +107,12 @@
 
         // construct 'select' element with types as options
         createSelect: function () {
-            var select = $("<select/>", {
+            const select = $("<select/>", {
                 html: "<option value='all'>all</option>"
             });
 
             _.each(this.getTypes(), function (item) {
-                var option = $("<option/>", {
+                const option = $("<option/>", {
                     value: item.toLowerCase(),
                     text: item.toLowerCase()
                 }).appendTo(select);
@@ -141,8 +137,8 @@
                 this.collection.reset(contacts, {silent: true});
 
                 // save filterType to be able to use it inside the callback
-                var filterType = this.filterType;
-                var filtered = _.filter(this.collection.models, function(item){
+                const filterType = this.filterType;
+                const filtered = _.filter(this.collection.models, function(item){
                     return item.get("type").toLowerCase() === filterType
                 });
                 this.collection.reset(filtered);
@@ -152,13 +148,12 @@
 
         // handling form input and creating new contact out of form data
         addContact: function (e) {
-            // default behaviour of the <button>:
-            // submit the form and reload the page – not what we want
+            // default behaviour of the <button>: submit form and reload page
             e.preventDefault();
 
             this.collection.reset(contacts, {silent: true});
 
-            var newModel = {};
+            const newModel = {};
             $("#addContact").children("input").each(function (i, el) {
                 if ($(el).val() !== "") {
                     newModel[el.id] = $(el).val();
@@ -177,7 +172,7 @@
         },
         
         removeContact: function (removedModel) {
-            var removed = removedModel.attributes;
+            const removed = removedModel.attributes;
 
             if (removed.photo === "img/placeholder.png") {
                 delete removed.photo;
@@ -195,8 +190,9 @@
         }
     });
 
+
     //add routing
-    var ContactsRouter = Backbone.Router.extend({
+    const ContactsRouter = Backbone.Router.extend({
         routes: {
             "filter/:type": "urlFilter"
         },
@@ -207,9 +203,10 @@
         }
     });
 
-    var directory = new DirectoryView();
+    const directory = new DirectoryView();
 
-    var contactsRouter = new ContactsRouter();
+    const contactsRouter = new ContactsRouter();
+
 
     //start history service
     Backbone.history.start();
