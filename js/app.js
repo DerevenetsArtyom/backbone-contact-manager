@@ -78,6 +78,16 @@
                 .insertAfter(this.$el.find(".name"));
 
             this.$el.find("input[type='hidden']").remove();
+        },
+        
+        addType: function () {
+            if (this.select.val() === "addType") {
+                this.select.remove();
+
+                 $("<input />", {
+                    "class": "type"
+                }).insertAfter(this.$el.find(".name")).focus();
+            }
         }
 
 
