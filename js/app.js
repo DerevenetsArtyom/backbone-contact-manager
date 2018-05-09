@@ -121,6 +121,10 @@
                     contacts.splice(_.indexOf(contacts, contact), 1, formData);
                 }
             });
+        },
+
+        cancelEdit: function () {
+            this.render()
         }
 
 
