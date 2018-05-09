@@ -33,7 +33,11 @@
         template: _.template($("#contactTemplate").html()),
 
         events: {
-            "click button.delete": "deleteContact"
+            "click button.delete": "deleteContact",
+            "click button.edit": "editContact",
+            "click button.save": "saveEdits",
+            "click button.cancel": "cancelEdit",
+            "change select.type": "addType"
         },
 
         render: function () {
