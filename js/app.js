@@ -88,6 +88,39 @@
                     "class": "type"
                 }).insertAfter(this.$el.find(".name")).focus();
             }
+        },
+
+        saveEdits: function (e) {
+            e.preventDefault();
+
+            //create an empty element to store the data
+            // that has been entered into the form
+            const formData = {};
+
+            const prev = this.model.previousAttributes();
+
+            $(e.target).closest("form").find(":input").not("button").each(function () {
+                const el = $(this);
+                formData[el.attr("class")] = el.val();
+            });
+
+            if (formData.photo === "") {
+                delete formData.photo;
+            }
+
+            this.model.set(formData);
+
+            this.render();
+
+            if (prev.photo === "img/placeholder.png") {
+               delete prev.photo;
+            }
+
+            _.each(contacts, function (contact) {
+                if (_.isEqual(contact, prev)) {
+                    contacts.splice(_.indexOf(contacts, contact), 1, formData);
+                }
+            });
         }
 
 
