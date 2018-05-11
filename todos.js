@@ -76,17 +76,46 @@ $(function(){
           return this;
       },
 
-      // Toggle the `"done"` state of the model.  --> "click .toggle" event
+      // "click .toggle" event
+      // Toggle the `"done"` state of the model.
       toggleDone: function() {
           this.model.toggle();
       },
 
-      // Switch view into `"editing"` mode, displaying the input field.
       // "dblclick .view" event
+      // Switch view into `"editing"` mode, displaying the input field.
       edit: function() {
           this.$el.addClass("editing");
           this.input.focus();
       },
+
+      // "blur .edit" event
+      // Close the `"editing"` mode, saving changes to the to-do.
+      close: function() {
+          const value = this.input.val();
+          if (!value) {
+              this.clear();
+          } else {
+              this.model.save({title: value});
+              this.$el.removeClass("editing");
+          }
+        },
+
+      // "keypress .edit" event
+      // If you hit `enter`, we're through editing the item.
+      updateOnEnter: function(e) {
+          if (e.keyCode === 13) this.close();
+      },
+
+      // "click a.destroy" event
+      // Remove the item, destroy the model.
+      clear: function() {
+          this.model.destroy();
+      }
+  });
+
+
+
 
 
 
