@@ -43,6 +43,32 @@ $(function(){
       comparator: 'order'
   });
 
+  // Create global collection of Todos
+  const Todos = new TodoList;
+
+  var TodoView = Backbone.View.extend({
+      tagName:  "li",
+      template: _.template($('#item-template').html()),
+
+      events: {
+          "click .toggle"   : "toggleDone",
+          "dblclick .view"  : "edit",
+          "click a.destroy" : "clear",
+          "keypress .edit"  : "updateOnEnter",
+          "blur .edit"      : "close"
+      },
+
+      // The TodoView listens for changes to its model, re-rendering.
+      // Since there's a one-to-one correspondence between To-do and
+      // TodoView in this app, we set a direct reference on the model for convenience.
+      initialize: function() {
+          // this.listenTo(this.model, 'change', this.render);
+          // this.listenTo(this.model, 'destroy', this.remove);
+          this.model.on('change', this.render, this);
+          this.model.on('destroy', this.remomve, this);
+      },
+
+
 
 
 
