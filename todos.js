@@ -130,6 +130,43 @@ $(function(){
       "click #toggle-all": "toggleAllComplete"
     },
 
+    // At initialization we bind to the relevant events on the `Todos`
+    // collection, when items are added or changed. Kick things off by
+    // loading any preexisting todos that might be saved in *localStorage*.
+    initialize: function() {
+        this.input = this.$("#new-todo");
+        this.allCheckbox = this.$("#toggle-all")[0];
+
+        this.listenTo(Todos, 'add', this.addOne);
+        this.listenTo(Todos, 'reset', this.addAll);
+        this.listenTo(Todos, 'all', this.render);
+
+        this.footer = this.$('footer');
+        this.main = $('#main');
+
+        Todos.fetch();
+    },
+
+    // Re-rendering the App just means refreshing the statistics --
+    // the rest of the app doesn't change.
+    render: function() {
+        const done = Todos.done().length;
+        const remaining = Todos.remaining().length;
+
+        if (Todos.length) {
+            this.main.show();
+            this.footer.show();
+            this.footer.html(this.statsTemplate({done: done, remaining: remaining}));
+        } else {
+            this.main.hide();
+            this.footer.hide();
+        }
+
+        this.allCheckbox.checked = !remaining;
+    },
+
+
+
 
 
 
