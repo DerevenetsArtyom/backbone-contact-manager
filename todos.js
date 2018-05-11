@@ -111,7 +111,25 @@ $(function(){
         clear: function() {
             this.model.destroy();
         }
-  });
+    });
+
+    // Overall **AppView** is the top-level piece of UI.
+    const AppView = Backbone.View.extend({
+
+    // Instead of generating a new element, bind to the existing skeleton of
+    // the App already present in the HTML.
+    el: $("#todoapp"),
+
+    // Template for the line of statistics at the bottom of the app.
+    statsTemplate: _.template($('#stats-template').html()),
+
+    // Delegated events for creating new items, and clearing completed ones.
+    events: {
+      "keypress #new-todo":  "createOnEnter",
+      "click #clear-completed": "clearCompleted",
+      "click #toggle-all": "toggleAllComplete"
+    },
+
 
 
 
